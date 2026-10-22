@@ -3,6 +3,7 @@ from torch import nn
 
 class KeypointsNetwork(nn.Module):
     def __init__(self):
+        super().__init__()
         self.convolutional_network = nn.Sequential(
         nn.Conv2d(in_channels=1,out_channels=16,kernel_size=3,padding=0,stride=1),
         nn.ReLU(),
