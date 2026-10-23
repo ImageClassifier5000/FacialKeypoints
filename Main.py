@@ -38,6 +38,5 @@ for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     Train.train_loop(train_dataloader, model, loss_fn, optimizer)
     Train.test_loop(test_dataloader, model, loss_fn)
+    torch.save(model.state_dict(), 'model_weights.pth')
 print("Done!")
-
-torch.save(model.state_dict(), 'model_weights.pth')

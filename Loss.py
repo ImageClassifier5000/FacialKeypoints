@@ -15,22 +15,3 @@ class Loss(nn.Module):
             loss += self.mse_loss(output_without_nan_values,labels_without_nan_values)
         mean_loss = loss / y.shape[0]
         return mean_loss
-
-from FacialKeypointsDataset import FacialKeypointsDataset
-from KeypointsNetwork import KeypointsNetwork
-import Train
-import numpy as np
-import pandas as pd
-import torch
-from torch import nn
-
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-
-dataset = FacialKeypointsDataset("./training/training.csv")
-dataset[0][1]
-
-loss_fn = Loss()
-
-loss = loss_fn(torch.unsqueeze(dataset[0][1],dim=0), torch.unsqueeze(dataset[0][1],dim=0))
-print(loss)

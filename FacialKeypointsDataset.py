@@ -33,16 +33,13 @@ class FacialKeypointsDataset(Dataset):
                 dtype=np.float32
             )
 
-            self.X = np.stack([
+            stacked_images = np.stack([
                 np.fromstring(s, sep=" ", dtype=np.uint8)
                 for s in image_strings
-            ]).reshape(-1, 96, 96)
+            ])
+            self.X = torch.reshape(torch.from_numpy(stacked_images),(-1,1,96,96)).to(torch.float)
 
             self.indices = np.arange(len(self.X))
-
-        self.transform = transforms.Compose([
-            transforms.ToTensor()
-        ])
 
     def __len__(self):
         return len(self.indices)
@@ -50,7 +47,7 @@ class FacialKeypointsDataset(Dataset):
     def __getitem__(self, idx):
         real_idx = self.indices[idx]
 
-        image = self.transform(self.X[real_idx])
+        image = self.X[real_idx]
         keypoints = torch.from_numpy(
             self.Y[real_idx].copy()
         )
