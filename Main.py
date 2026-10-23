@@ -23,7 +23,7 @@ model.load_state_dict(
 
 train_dataloader = DataLoader(
     train_dataset,
-    batch_size=100,
+    batch_size=50,
     shuffle=True,
 )
 test_dataloader = DataLoader(
@@ -31,8 +31,8 @@ test_dataloader = DataLoader(
     batch_size=32,
     shuffle=True,
 )
-learning_rate = 5e-4
-epochs = 3
+learning_rate = 1e-4
+epochs = 10
 loss_fn = Loss()
 
 # loss_fn
