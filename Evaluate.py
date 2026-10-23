@@ -39,14 +39,17 @@ def evaluate(dataloader, model, loss_fn, device):
     for keypoint_index, distances in enumerate(keypoint_distances, start=1):
         if distances:
             mean_distance = sum(distances) / len(distances)
-            print(f"Keypoint {keypoint_index}: mean distance = {mean_distance:.4f} pixels")
+            print(
+                f"Keypoint {keypoint_index}: mean distance = "
+                f"{mean_distance:.4f} pixels, labeled images = {len(distances)}"
+            )
         else:
-            print(f"Keypoint {keypoint_index}: no labels available")
+            print(f"Keypoint {keypoint_index}: no labels available, labeled images = 0")
 
 
 def main():
     dataset = FacialKeypointsDataset("./training/training.csv")
-    (_, remaining_dataset) = dataset.split((80, 20))
+    (training_dataset, remaining_dataset) = dataset.split((80, 20))
     (_, validation_dataset) = remaining_dataset.split((50, 50))
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
 

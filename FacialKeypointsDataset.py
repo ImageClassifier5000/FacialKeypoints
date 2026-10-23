@@ -2,9 +2,12 @@
 import numpy as np
 import pandas as pd
 import torch
+from pathlib import Path
+from PIL import Image
+import albumentations as A
 
 from torch.utils.data import Dataset
-from torchvision import transforms
+from torchvision.transforms import functional as F
 
 
 class FacialKeypointsDataset(Dataset):
@@ -52,6 +55,23 @@ class FacialKeypointsDataset(Dataset):
             self.Y[real_idx].copy()
         )
 
+        transform = A.Compose(
+            [A.Rotate(angle_range=(-90,90), p=0.5)],
+            keypoint_params=A.KeypointParams(
+                coord_format="xy",
+                remove_invisible=False
+            )
+        )
+
+        keypoints_list = keypoints.reshape(15, 2).tolist()
+
+        result = transform(
+            image=image,
+            keypoints=keypoints_list
+        )
+
+        image = F.normalize(result["image"], mean=[0.5], std=[0.5])
+        keypoints = torch.flatten(torch.from_numpy(result["keypoints"]))
         return image, keypoints
 
     def split(self, distribution):
@@ -87,3 +107,32 @@ class FacialKeypointsDataset(Dataset):
         )
 
         return first_dataset, second_dataset
+
+
+class FacialKeypointsImageDataset(Dataset):
+
+    def __init__(self, image_dir, image_size=96):
+        super().__init__()
+
+        if image_size <= 0:
+            raise ValueError("image_size muss größer als 0 sein.")
+
+        self.image_size = image_size
+        self.image_paths = sorted(
+            path
+            for path in Path(image_dir).iterdir()
+            if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg"}
+        )
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
+        with Image.open(self.image_paths[idx]) as image:
+            image = image.convert("L").resize(
+                (self.image_size, self.image_size),
+                resample=Image.Resampling.BILINEAR,
+            )
+
+        image_array = np.array(image, dtype=np.uint8)
+        return torch.from_numpy(image_array).to(torch.float32).unsqueeze(0)

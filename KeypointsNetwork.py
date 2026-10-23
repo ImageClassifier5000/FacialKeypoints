@@ -19,8 +19,7 @@ class KeypointsNetwork(nn.Module):
         )
         self.endprocessing = nn.Sequential(
             nn.modules.flatten.Flatten(start_dim=1,end_dim=-1),
-            nn.Linear(in_features=12*12*32,out_features=30),
-            nn.ReLU()
+            nn.Linear(in_features=12*12*32,out_features=30)
         )
     def forward(self,x):
         x = self.convolutional_network(x)
